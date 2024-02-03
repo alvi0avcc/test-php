@@ -1,17 +1,22 @@
 <?php
 
 require 'FormHelper.php';
+
 session_start();
+
+print $_SERVER['REQUEST_METHOD'];
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-list($errors, $input) = validate_form();
-if ($errors) {
-show_form($errors);
+    list($errors, $input) = validate_form();
+    if ($errors) {
+        show_form($errors);
+    } else {
+        process_form($input);
+        }
 } else {
-process_form($input);
+    show_form();
 }
-} else {
-show_form();
-}
+
 function show_form($errors = array()) {
 // Собственные значения, устанавливаемые по умолчанию,
 // отсутствуют, поэтому и нечего передавать конструктору
@@ -39,31 +44,32 @@ Password: {$form->input('password',
 </form>
 _FORM_;
 }
+
 function validate_form() {
-$input = array();
-$errors = array();
+    $input = array();
+    $errors = array();
 // Некоторые образцы имен пользователей и паролей
-$users = array('alice' => 'dogl23',
-'bob' => 'my^pwd',
-'charlie' => '**fun**');
+    $users = array('alice' => 'dogl23',
+    'bob' => 'my^pwd',
+    'charlie' => '**fun**');
 // убедиться в достоверности имени пользователя
-$input['username'] = $_POST['username'] ?? '';
-if (! array_key_exists($input['username'], $users)) {
-$errors[] = 'Please enter a valid username and password.';
-}
+    $input['username'] = $_POST['username'] ?? '';
+    if (! array_key_exists($input['username'], $users)) {
+        $errors[] = 'Please enter a valid username and password.';
+    }
 // Оператор else означает, что проверка пароля пропускается,
 // если введено недостоверное имя пользователя
-else {
+    else {
 // проверить правильность введенного пароля
-$saved_password = $users[ $input['username'] ];
-$submitted_password = $_POST['password'] ?? '';
-if ($saved_password != $submitted_password) {
-$errors[] =
-'Please enter a valid username and password.';
-}
-}
+        $saved_password = $users[ $input['username'] ];
+        $submitted_password = $_POST['password'] ?? '';
+        if ($saved_password != $submitted_password) {
+            $errors[] ='Please enter a valid username and password.';
+        }
+    }
 return array($errors, $input);
 }
+
 function process_form($input) {
 // ввести имя пользователя в сеанс
 $_SESSION['username'] = $input['username'];
