@@ -1,0 +1,6 @@
+{
+    "name": "admin/test-php",
+    "require": {
+        "swiftmailer/swiftmailer": "^6.3"
+    }
+}
